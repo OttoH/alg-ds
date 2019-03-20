@@ -1,5 +1,4 @@
 import LinkedList from '../index'
-import { reverse } from 'dns';
 
 describe('LinkedList', () => {
   test('prepend', () => {
@@ -17,15 +16,37 @@ describe('LinkedList', () => {
     expect(ll.toArray()).toEqual(['once', 'twice'])
   })
 
-  test('delete', () => {
+  test('delete - mid', () => {
     const ll = new LinkedList()
 
     ll.append('once')
     ll.append('twice')
+    ll.append('three')
+
+    ll.delete('twice')
+    expect(ll.toArray()).toEqual(['once', 'three'])
+  })
+
+  test('delete - head', () => {
+    const ll = new LinkedList()
+
+    ll.append('once')
+    ll.append('twice')
+    ll.append('three')
 
     ll.delete('once')
-    ll.delete('twice')
-    expect(ll.toArray()).toEqual([])
+    expect(ll.toArray()).toEqual(['twice', 'three'])
+  })
+
+  test('delete - tail', () => {
+    const ll = new LinkedList()
+
+    ll.append('once')
+    ll.append('twice')
+    ll.append('three')
+
+    ll.delete('three')
+    expect(ll.toArray()).toEqual(['once', 'twice'])
   })
 
   test('find', () => {

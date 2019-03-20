@@ -1,4 +1,4 @@
-var defaultComparator = (a, b) => {
+export const defaultComparator = (a, b) => {
   if(a === b) {
     return 0
   }

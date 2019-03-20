@@ -33,7 +33,7 @@ export default class LinkedList {
     return this
   }
 
-  delete(value) {
+  delete(value, compareFunc = null) {
     if (!this.head) {
       return null
     }
@@ -44,7 +44,10 @@ export default class LinkedList {
     // if target is in the head
     while(
       currentNode &&
-      this.comparator.equal(currentNode.value, value)
+      (
+        this.comparator.equal(currentNode.value, value) ||
+        (compareFunc && compareFunc(currentNode.value, value))
+      )
     ) {
       deleteNode = currentNode
       this.head = this.head.next
@@ -52,12 +55,17 @@ export default class LinkedList {
     }
 
     // if target exists in middle
-    currentNode = this.head ? this.head.next : null
     while(currentNode) {
-      if (this.comparator.equal(current.value, value)) {
-        deleteNode = currentNode
-        this.head.next = currentNode.next
-        currentNode = this.head.next
+      if (
+        currentNode.next &&
+        (
+          this.comparator.equal(currentNode.next.value, value) ||
+          (compareFunc && compareFunc(currentNode.next.value, value))
+        )
+      ) {
+        deleteNode = currentNode.next
+        currentNode.next = currentNode.next.next
+        currentNode = currentNode.next
       } else {
         currentNode = currentNode.next
       }
@@ -71,15 +79,18 @@ export default class LinkedList {
     return deleteNode
   }
 
-  find(value) {
-    if (!this.head) {
+  find(value, compareFunc = null) {
+    if (!this.head || !value) {
       return null
     }
 
     let currentNode = this.head
     let foundNode = null
     while(currentNode) {
-      if (this.comparator.equal(currentNode.value, value)) {
+      if (
+        (compareFunc && compareFunc(currentNode.value, value)) ||
+        this.comparator.equal(currentNode.value, value)
+      ) {
         foundNode = currentNode
       }
       currentNode = currentNode.next
