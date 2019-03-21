@@ -1,4 +1,4 @@
-import Comparator from '../utils/basicComparator'
+import Comparator, { basic } from '../utils/basicComparator'
 
 export class Heap {
   constructor (customComparatorFunc = null) {
@@ -8,6 +8,10 @@ export class Heap {
 
     this.heapContainer = []
     this.comparator = new Comparator(customComparatorFunc)
+  }
+
+  isEmpty() {
+    return this.heapContainer.length === 0
   }
 
   getParentIdx (childIdx) {
@@ -53,7 +57,7 @@ export class Heap {
   }
 
   peek () {
-    if (this.heapContainer.length === 0) {
+    if (this.isEmpty()) {
       return null
     }
 
@@ -101,7 +105,7 @@ export class Heap {
   }
 
   poll () {
-    if (!this.heapContainer.length) {
+    if (this.isEmpty()) {
       return null
     }
 
@@ -115,6 +119,46 @@ export class Heap {
     this.heapifyDown()
 
     return result
+  }
+
+  find (item) {
+    let foundIdxs = []
+
+    for(let i = 0; i < this.heapContainer.length; i++) {
+      if (this.comparator.equal(item, this.heapContainer[i])) {
+        foundIdxs.push(i)
+      }
+    }
+
+    return foundIdxs
+  }
+
+  remove (item) {
+    const foundIdxs = this.find(item)
+
+    for (let i = 0; i < foundIdxs.length; i++) {
+      const removeItemIdx = foundIdxs[i]
+
+      if (removeItemIdx === this.heapContainer.length - 1) {
+        // the last one, just pop it
+        this.heapContainer.pop()
+      } else {
+        const parent = this.parent(removeItemIdx)
+
+        this.heapContainer[removeItemIdx] = this.heapContainer.pop()
+
+        if (
+          this.hasLeftChild(removeItemIdx) &&
+          (!parent ||
+          this.isValidatePairs(parent, this.heapContainer[removeItemIdx]))
+        ) {
+          this.heapifyDown(removeItemIdx)
+        } else {
+          this.heapifyUp(removeItemIdx)
+        }
+      }
+    }
+    return this
   }
 
   isValidatePairs (nodeOne, nodeTwo) {
@@ -131,14 +175,12 @@ export class Heap {
 
 export class MinHeap extends Heap {
   isValidatePairs (nodeOne, nodeTwo) {
-    const comparator = new Comparator()
-    return comparator.lessThan(nodeOne, nodeTwo) || comparator.equal(nodeOne, nodeTwo)
+    return this.comparator.lessThan(nodeOne, nodeTwo) || this.comparator.equal(nodeOne, nodeTwo)
   }
 }
 
 export class MaxHeap extends Heap {
   isValidatePairs (nodeOne, nodeTwo) {
-    const comparator = new Comparator()
-    return comparator.greatThan(nodeOne, nodeTwo) || comparator.equal(nodeOne, nodeTwo)
+    return this.comparator.greatThan(nodeOne, nodeTwo) || this.comparator.equal(nodeOne, nodeTwo)
   }
 }

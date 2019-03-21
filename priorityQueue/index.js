@@ -1,18 +1,24 @@
-import Heap from '../heap'
+import { MinHeap } from '../heap'
 import Comparator, { defaultComparator } from '../utils/basicComparator'
 
-export default class PriorityQueue extends Heap {
+export default class PriorityQueue extends MinHeap {
   constructor () {
     super()
 
     this.priorities = new Map()
 
-    this.comparor = new Comparator(this.priorityComparator.bind(this))
+    this.comparator = new Comparator(this.priorityComparator.bind(this))
   }
 
   add (item, priority = 0) {
     this.priorities.set(item, priority)
     super.add(item)
+    return this
+  }
+
+  remove (item) {
+    super.remove(item)
+    this.priorities.delete(item)
     return this
   }
 
